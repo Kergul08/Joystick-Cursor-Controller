@@ -8,7 +8,19 @@ A hardware-software bridge that transforms an analog 2-axis joystick into a full
 ---
 ## How It Works
 1) **Hardware Sampling Layer (Arduino C++)**
-* **ADC Reading:**The dual axis potentiometers divide voltage between $0\text{V}$ and $5\text{V}$, mapped to 10-bit digital values (`0` to `1023`) via the Arduino's Analog-to-Digital Converter.
+* **ADC Reading:** The dual axis potentiometers divide voltage between $0\text{V}$ and $5\text{V}$, mapped to 10-bit digital values (`0` to `1023`) via the Arduino's Analog-to-Digital Converter.
+
+* **Switch Debouncing:** The integrated select button reads `LOW` when pressed due to internal pullup configuration.
+
+* **Data Serialization:** Values are formatted into a light, comma-delimited string packet (`x_val,y_val,button_state\n`) and transmitted across the serial interface at `9600 baud`.
+
+2) **Host Control Layer (Python)**
+* **Buffer Overflow Prevention:** The background daemon monitors input queue depth (`arduino.in_waiting > 100`) and flushes stale frames to eliminate latency build-up.
+
+* **Potentiometer Zeroing & Deadzone Filtering:** Hardcoded center baselines (`center_x = 522, center_y = 525`) offset mechanical calibration drift. Movements within a `DEADZONE` threshold of 10 units are ignored to prevent cursor chatter.
+
+* **Proportional Scaling & Injection:** Normalized deviation vectors are scaled by a velocity factor (SPEED = 10), disabling native delay flags (`pyautogui.PAUSE = 0`) to stream fluid relative mouse deltas via `pyautogui.moveRel()`.
 
 ---
-## 
+## Installation & Setup
+
