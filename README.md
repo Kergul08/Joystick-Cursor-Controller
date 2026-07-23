@@ -6,7 +6,9 @@ A hardware-software bridge that transforms an analog 2-axis joystick into a full
 ![Project Demo]
 
 ---
-## Project Architechture
-The project is split into two independent modules communicating over a shared Serial connection:
-1. Firmware (/arduino): Samples the analog voltages from the X/Y potentiometer joystick axes and monitors the digital click state of the integrated select button. It packages these metrics into a lightweight serialized data string.
-2. Software Daemon (/python): A background script that listens to the active COM port, deserializes the coordinates, translates the delta vectors, and injects native mouse events directly into the operating system window manager.
+## How It Works
+1) **Hardware Sampling Layer (Arduino C++)**
+* **ADC Reading:**The dual axis potentiometers divide voltage between $0\text{V}$ and $5\text{V}$, mapped to 10-bit digital values (`0` to `1023`) via the Arduino's Analog-to-Digital Converter.
+
+---
+## 
